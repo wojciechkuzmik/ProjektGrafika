@@ -36,11 +36,6 @@ void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
 		{
 			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ maski"));
 		}
-		else
-		{
-			//jak ustawi sie ta maske to w sumie wizualnie nic nie daje wiec nie wiem xd
-			mask = bitmap_mask.GetMask();
-		}
 	}
 	img_mask = bitmap_mask.ConvertToImage();
 	set_mask();
@@ -77,11 +72,10 @@ void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
 	else
 		color_choice = 'B';
 	set_mask();
-	//trzeba zrobiæ ¿eby aktualizowalo kolor w masce po zmianie
 }
 
 void GUIMyFrame1::set_mask() 
-//glowna funkcja to 
+//glowna funkcja  
 {
 	img_cpy = img_org.Copy();
 	int w = img_mask.GetWidth();
@@ -89,23 +83,94 @@ void GUIMyFrame1::set_mask()
 	int size = w * h * 3;
 	unsigned char *data = img_cpy.GetData();
 	unsigned char *mask_data = img_mask.GetData();
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			if (color_choice == 'R') {
-				data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
-				data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
-			}
-			else if (color_choice == 'G') {
-				data[3 * w * i + 3 * j] = mask_data[3 * w * i + 3 * j];
-				data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
-			}
-			else {
-				data[3 * w * i + 3 * j] = mask_data[3 * w * i + 3 * j];
-				data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+	//pewnie optymalizacja by byla lepsza gdyby te warunki wyciagnac przed petle i zrobic kilka petli
+	//ale kto by sie tym przejmowal
+
+	if (mask_choice == 0) {
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (color_choice == 'R') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (255, 0, 0), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j] != 255 || mask_data[3 * w * i + 3 * j + 1] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+				}
+				else if (color_choice == 'G') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 255, 0), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j + 1] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+				}
+				else {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j + 2] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 1] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+				}
 			}
 		}
 	}
-
+	else if (mask_choice == 1) {
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (color_choice == 'R') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (255, 0, 0), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j] != 255 || mask_data[3 * w * i + 3 * j + 1] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					//tu dalem petle zeby 3 razy nie wrzucac if-else
+					else {
+						for (int k = 0; k < 3; k++) {
+							if (data[3 * w * i + 3 * j + k] + mask_data[3 * w * i + 3 * j + k] > 255)
+								data[3 * w * i + 3 * j + k] = 255;
+							else data[3 * w * i + 3 * j + k] += mask_data[3 * w * i + 3 * j + k];
+						}
+					}
+				}
+				else if (color_choice == 'G') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 255, 0), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j + 1] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					else {
+						for (int k = 0; k < 3; k++) {
+							if (data[3 * w * i + 3 * j + k] + mask_data[3 * w * i + 3 * j + k] > 255)
+								data[3 * w * i + 3 * j + k] = 255;
+							else data[3 * w * i + 3 * j + k] += mask_data[3 * w * i + 3 * j + k];
+						}
+					}
+				}
+				else {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
+					if (mask_data[3 * w * i + 3 * j + 2] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 1] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					else {
+						for (int k = 0; k < 3; k++) {
+							if (data[3 * w * i + 3 * j + k] + mask_data[3 * w * i + 3 * j + k] > 255)
+								data[3 * w * i + 3 * j + k] = 255;
+							else data[3 * w * i + 3 * j + k] += mask_data[3 * w * i + 3 * j + k];
+						}
+					}
+				}
+			}
+		}
+	}
+	else {
+		//mnozenie
+	}
 	Repaint();
 }
 

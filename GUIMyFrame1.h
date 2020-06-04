@@ -30,11 +30,9 @@ public:
 
 	wxBitmap bitmap_image;	//zmienna przechowujaca obrazek tla
 	wxBitmap bitmap_mask; // zmienna przechowujaca obrazek maski
-	wxMask* mask = nullptr; //zmienna przechowujaca maske 
 	wxImage img_org; //zapisujemy tu wczytana bitmape
 	wxImage img_cpy; //dokonujemy zmian na tej kopii obrazka
 	wxImage img_mask; //zapisujemy tu wczytana maske
-	//wxBitmap new_image; //zmienna w ktorej bedziemy przechowywac ta kombinacje obrazka i maski do zapisu
 	int mask_choice; // pomocniczy int do wyboru sposobu kombinacji obrazka z maska
 	char color_choice; // pomocnicza zmienna wybranego koloru w masce (R lub G lub B)
 };
