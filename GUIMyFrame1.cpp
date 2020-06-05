@@ -39,8 +39,16 @@ void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
 			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ maski"));
 		}
 	}
+	if (!img_org.IsOk()) {
+		wxMessageBox(_("Proszê wczytaæ obraz przed wczytaniem maski"));
+		return;
+	}
 	if (bitmap_mask.IsOk()) {
 		img_mask = bitmap_mask.ConvertToImage();
+		if (img_mask.GetWidth() > img_cpy.GetWidth() || img_mask.GetHeight() > img_cpy.GetHeight()) {
+			wxMessageBox(_("Za du¿a maska"));
+			return;
+		}
 		set_mask();
 	}
 }
@@ -89,8 +97,8 @@ void GUIMyFrame1::set_mask()
 {
 	img_cpy = img_org.Copy();
 	int w = img_mask.GetWidth();
+	int wo = img_cpy.GetWidth();
 	int h = img_mask.GetHeight();
-	int size = w * h * 3;
 	unsigned char *data = img_cpy.GetData();
 	unsigned char *mask_data = img_mask.GetData();
 	//pewnie optymalizacja by byla lepsza gdyby te warunki wyciagnac przed petle i zrobic kilka petli
