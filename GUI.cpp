@@ -40,7 +40,7 @@ MyFrame1::MyFrame1(wxWindow* parent, wxWindowID id, const wxString& title, const
 	m_staticline2 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 	bSizer2->Add(m_staticline2, 0, wxEXPAND | wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-	wxString color_optionsChoices[] = { wxT("Czerwony"), wxT("Zielony"), wxT("Niebieski"),  wxT("¯aden") };
+	wxString color_optionsChoices[] = { wxT("Czerwony"), wxT("Zielony"), wxT("Niebieski"), wxT("Wszystkie") };
 	int color_optionsNChoices = sizeof(color_optionsChoices) / sizeof(wxString);
 	color_options = new wxRadioBox(this, wxID_ANY, wxT("Kolor przezroczysyty"), wxDefaultPosition, wxDefaultSize, color_optionsNChoices, color_optionsChoices, 1, wxRA_SPECIFY_COLS);
 	color_options->SetSelection(0);

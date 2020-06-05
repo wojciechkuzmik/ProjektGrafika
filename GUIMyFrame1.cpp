@@ -45,10 +45,6 @@ void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
 	}
 	if (bitmap_mask.IsOk()) {
 		img_mask = bitmap_mask.ConvertToImage();
-		if (img_mask.GetWidth() > img_cpy.GetWidth() || img_mask.GetHeight() > img_cpy.GetHeight()) {
-			wxMessageBox(_("Za du¿a maska"));
-			return;
-		}
 		set_mask();
 	}
 }
@@ -96,13 +92,26 @@ void GUIMyFrame1::set_mask()
 //glowna funkcja  
 {
 	img_cpy = img_org.Copy();
-	int w = img_mask.GetWidth();
-	int wo = img_cpy.GetWidth();
-	int h = img_mask.GetHeight();
+	wxImage temp = img_org.Copy();
+	int w = img_cpy.GetWidth();
+	int wo = img_mask.GetWidth();
+	int ho = img_mask.GetHeight();
+	int h = img_cpy.GetHeight();
 	unsigned char *data = img_cpy.GetData();
-	unsigned char *mask_data = img_mask.GetData();
+	unsigned char *old_mask_data = img_mask.GetData();
+	unsigned char *mask_data = temp.GetData();
+	
 	//pewnie optymalizacja by byla lepsza gdyby te warunki wyciagnac przed petle i zrobic kilka petli
 	//ale kto by sie tym przejmowal
+
+	//resize maski ¿eby fitowa³ do rozmiaru obrazka
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			mask_data[3 * w * i + 3 * j + 0] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 0];
+			mask_data[3 * w * i + 3 * j + 1] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 1];
+			mask_data[3 * w * i + 3 * j + 2] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 2];
+		}
+	}
 
 	if (mask_choice == 0) {
 		//zamiana kolorow
@@ -131,11 +140,6 @@ void GUIMyFrame1::set_mask()
 						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
 						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
 					}
-				}
-				else { //color_choice == 'Z'
-					data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
-					data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
-					data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
 				}
 			}
 		}
@@ -212,24 +216,46 @@ void GUIMyFrame1::set_mask()
 				}
 				else if (color_choice == 'R') {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (255, 0, 0), jesli tak to wchodzimy do warunku
-					float tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
-					data[3 * w * i + 3 * j + 1] *= tmp;
-					tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
-					data[3 * w * i + 3 * j + 2] *= tmp;
+					if (mask_data[3 * w * i + 3 * j] != 255 || mask_data[3 * w * i + 3 * j + 1] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					else
+					{
+						float tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
+						data[3 * w * i + 3 * j + 1] *= tmp;
+						tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
+						data[3 * w * i + 3 * j + 2] *= tmp;
+					}
 				}
 				else if (color_choice == 'G') {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 255, 0), jesli tak to wchodzimy do warunku
-					float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
-					data[3 * w * i + 3 * j] *= tmp;
-					tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
-					data[3 * w * i + 3 * j + 2] *= tmp;
+					if (mask_data[3 * w * i + 3 * j + 1] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 2] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					else {
+						float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
+						data[3 * w * i + 3 * j] *= tmp;
+						tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
+						data[3 * w * i + 3 * j + 2] *= tmp;
+					}
 				}
 				else {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
-					float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
-					data[3 * w * i + 3 * j] *= tmp;
-					tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
-					data[3 * w * i + 3 * j + 1] *= tmp;
+					if (mask_data[3 * w * i + 3 * j + 2] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 1] != 0) {
+						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+						data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+					}
+					else {
+						float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
+						data[3 * w * i + 3 * j] *= tmp;
+						tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
+						data[3 * w * i + 3 * j + 1] *= tmp;
+					}
 				}
 			}
 		}
