@@ -11,7 +11,7 @@ GUIMyFrame1::GUIMyFrame1(wxWindow* parent)
 }
 
 void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
-//wczytuje do zmiennej "image" bitmape 
+//wczytuje do zmiennej "bitmap_image" bitmape i zmienia j¹ na typ wxImage - zmienna img_org, tworzy kopiê w img_cpy
 {
 	wxFileDialog WxOpenFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("Base image file (*.bmp)|*.bmp"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (WxOpenFileDialog.ShowModal() == wxID_OK)
@@ -29,7 +29,7 @@ void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
 }
 
 void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
-//wczytuje do zmiennej "mask" bitmape i odpowiedni kolor
+//wczytuje do zmiennej bitmap_mask bitmape i zmienia j¹ na typ wxImage - zmienna img_mask
 {
 	wxFileDialog WxOpenFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("Mask file (*.bmp)|*.bmp"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (WxOpenFileDialog.ShowModal() == wxID_OK)
@@ -54,7 +54,7 @@ void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
 }
 
 void GUIMyFrame1::save_imageOnButtonClick(wxCommandEvent& event)
-//zapisuje do pliku to co jest w new_image ( na razie nic )
+//zapisuje do pliku to co jest w img_cpy
 {
 	if (img_cpy.IsOk()) {
 		wxBitmap save(img_cpy);
@@ -78,7 +78,7 @@ void GUIMyFrame1::mask_optionsOnRadioBox(wxCommandEvent& event)
 }
 
 void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
-//ustala zmienna pomocnicza "base_color" na odpowiedni kolorek
+//ustala zmienna pomocnicza "color_choice" na odpowiedni char - R, G, B lub Z
 {
 	if (color_options->GetSelection() == 0)
 		color_choice = 'R';
@@ -238,7 +238,7 @@ void GUIMyFrame1::set_mask()
 }
 
 void GUIMyFrame1::Repaint()
-//rysuje bitmape obrazka i na razie nie robi nic z maska
+//rysuje img_cpy - tam powinnien sie znajdowac obrazek oryginalny lub juz z na³o¿on¹ mask¹
 {	
 	wxBitmap bitmap(img_cpy);
 	wxClientDC dc(m_panel1);
