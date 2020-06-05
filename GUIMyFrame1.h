@@ -33,8 +33,8 @@ public:
 	wxImage img_org; //zapisujemy tu wczytana bitmape
 	wxImage img_cpy; //dokonujemy zmian na tej kopii obrazka
 	wxImage img_mask; //zapisujemy tu wczytana maske
-	int mask_choice; // pomocniczy int do wyboru sposobu kombinacji obrazka z maska
-	char color_choice; // pomocnicza zmienna wybranego koloru w masce (R lub G lub B)
+	int mask_choice; // pomocniczy int do wyboru sposobu kombinacji obrazka z maska (0, 1 lub 2)
+	char color_choice; // pomocnicza zmienna wybranego koloru w masce (R lub G lub B lub Z)
 };
 
 #endif // __GUIMyFrame1__
