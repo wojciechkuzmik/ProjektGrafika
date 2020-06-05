@@ -21,9 +21,11 @@ void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
 			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ obrazka"));
 		}
 	}
-	img_org = bitmap_image.ConvertToImage();
-	img_cpy = img_org.Copy();
-	Repaint();
+	if (bitmap_image.IsOk()) {
+		img_org = bitmap_image.ConvertToImage();
+		img_cpy = img_org.Copy();
+		Repaint();
+	}
 }
 
 void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
@@ -37,20 +39,24 @@ void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
 			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ maski"));
 		}
 	}
-	img_mask = bitmap_mask.ConvertToImage();
-	set_mask();
+	if (bitmap_mask.IsOk()) {
+		img_mask = bitmap_mask.ConvertToImage();
+		set_mask();
+	}
 }
 
 void GUIMyFrame1::save_imageOnButtonClick(wxCommandEvent& event)
 //zapisuje do pliku to co jest w new_image ( na razie nic )
 {
-	wxBitmap save(img_cpy);
-	wxFileDialog WxSaveFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("config files (*.bmp)|*.bmp"), wxFD_SAVE);
-	if (WxSaveFileDialog.ShowModal() == wxID_OK) 
-	{
-		if (!save.SaveFile((const_cast<char*>((const char*)WxSaveFileDialog.GetPath().mb_str())), wxBITMAP_TYPE_BMP))
+	if (img_cpy.IsOk()) {
+		wxBitmap save(img_cpy);
+		wxFileDialog WxSaveFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("config files (*.bmp)|*.bmp"), wxFD_SAVE);
+		if (WxSaveFileDialog.ShowModal() == wxID_OK)
 		{
-			wxLogError(_("Nie uda\u0142o si\u0119 zapisaæ obrazka"));
+			if (!save.SaveFile((const_cast<char*>((const char*)WxSaveFileDialog.GetPath().mb_str())), wxBITMAP_TYPE_BMP))
+			{
+				wxLogError(_("Nie uda\u0142o si\u0119 zapisaæ obrazka"));
+			}
 		}
 	}
 }
@@ -59,7 +65,8 @@ void GUIMyFrame1::mask_optionsOnRadioBox(wxCommandEvent& event)
 //ustala zmienna pomocnicza mask_choice na odpowiedni int
 {
 	mask_choice = mask_options->GetSelection();
-	set_mask();
+	if(img_cpy.IsOk())
+		set_mask();
 }
 
 void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
@@ -69,9 +76,12 @@ void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
 		color_choice = 'R';
 	else if (color_options->GetSelection() == 1)
 		color_choice = 'G';
-	else
+	else if (color_options->GetSelection() == 2)
 		color_choice = 'B';
-	set_mask();
+	else
+		color_choice = 'Z';
+	if (img_cpy.IsOk())
+		set_mask();
 }
 
 void GUIMyFrame1::set_mask() 
@@ -87,6 +97,7 @@ void GUIMyFrame1::set_mask()
 	//ale kto by sie tym przejmowal
 
 	if (mask_choice == 0) {
+		//zamiana kolorow
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (color_choice == 'R') {
@@ -105,7 +116,7 @@ void GUIMyFrame1::set_mask()
 						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
 					}
 				}
-				else {
+				else if (color_choice == 'B') {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
 					if (mask_data[3 * w * i + 3 * j + 2] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 1] != 0) {
 						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
@@ -113,10 +124,16 @@ void GUIMyFrame1::set_mask()
 						data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
 					}
 				}
+				else { //color_choice == 'Z'
+					data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
+					data[3 * w * i + 3 * j + 1] = mask_data[3 * w * i + 3 * j + 1];
+					data[3 * w * i + 3 * j + 2] = mask_data[3 * w * i + 3 * j + 2];
+				}
 			}
 		}
 	}
 	else if (mask_choice == 1) {
+		//sumowanie kolorow
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (color_choice == 'R') {
@@ -150,7 +167,7 @@ void GUIMyFrame1::set_mask()
 						}
 					}
 				}
-				else {
+				else if (color_choice == 'B') {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
 					if (mask_data[3 * w * i + 3 * j + 2] != 255 || mask_data[3 * w * i + 3 * j] + mask_data[3 * w * i + 3 * j + 1] != 0) {
 						data[3 * w * i + 3 * j + 0] = mask_data[3 * w * i + 3 * j + 0];
@@ -165,11 +182,49 @@ void GUIMyFrame1::set_mask()
 						}
 					}
 				}
+				else { //color_choice == 'Z'
+					for (int k = 0; k < 3; k++) {
+						if (data[3 * w * i + 3 * j + k] + mask_data[3 * w * i + 3 * j + k] > 255)
+							data[3 * w * i + 3 * j + k] = 255;
+						else data[3 * w * i + 3 * j + k] += mask_data[3 * w * i + 3 * j + k];
+					}
+				}
 			}
 		}
 	}
 	else {
-		//mnozenie
+		//mnozenie kolorow
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (color_choice == 'Z') {
+					for (int k = 0; k < 3; k++) {
+						float tmp = mask_data[3 * w * i + 3 * j + k] / 255.0;
+						data[3 * w * i + 3 * j + k] *= tmp;
+					}
+				}
+				else if (color_choice == 'R') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (255, 0, 0), jesli tak to wchodzimy do warunku
+					float tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
+					data[3 * w * i + 3 * j + 1] *= tmp;
+					tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
+					data[3 * w * i + 3 * j + 2] *= tmp;
+				}
+				else if (color_choice == 'G') {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 255, 0), jesli tak to wchodzimy do warunku
+					float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
+					data[3 * w * i + 3 * j] *= tmp;
+					tmp = mask_data[3 * w * i + 3 * j + 2] / 255.0;
+					data[3 * w * i + 3 * j + 2] *= tmp;
+				}
+				else {
+					//sprawdzamy czy piksel w masce ma kolor inny niz (0, 0, 255), jesli tak to wchodzimy do warunku
+					float tmp = mask_data[3 * w * i + 3 * j] / 255.0;
+					data[3 * w * i + 3 * j] *= tmp;
+					tmp = mask_data[3 * w * i + 3 * j + 1] / 255.0;
+					data[3 * w * i + 3 * j + 1] *= tmp;
+				}
+			}
+		}
 	}
 	Repaint();
 }
