@@ -91,27 +91,16 @@ void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
 void GUIMyFrame1::set_mask() 
 //glowna funkcja  
 {
+	img_mask.Rescale(img_cpy.GetWidth(), img_cpy.GetHeight());
+
 	img_cpy = img_org.Copy();
-	wxImage temp = img_org.Copy();
 	int w = img_cpy.GetWidth();
-	int wo = img_mask.GetWidth();
-	int ho = img_mask.GetHeight();
 	int h = img_cpy.GetHeight();
 	unsigned char *data = img_cpy.GetData();
-	unsigned char *old_mask_data = img_mask.GetData();
-	unsigned char *mask_data = temp.GetData();
+	unsigned char *mask_data = img_mask.GetData();
 	
 	//pewnie optymalizacja by byla lepsza gdyby te warunki wyciagnac przed petle i zrobic kilka petli
 	//ale kto by sie tym przejmowal
-
-	//resize maski ¿eby fitowa³ do rozmiaru obrazka
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			mask_data[3 * w * i + 3 * j + 0] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 0];
-			mask_data[3 * w * i + 3 * j + 1] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 1];
-			mask_data[3 * w * i + 3 * j + 2] = old_mask_data[3 * wo * int(i / (float)h*ho) + 3 * int(j / (float)w*wo) + 2];
-		}
-	}
 
 	if (mask_choice == 0) {
 		//zamiana kolorow
@@ -213,6 +202,7 @@ void GUIMyFrame1::set_mask()
 						float tmp = mask_data[3 * w * i + 3 * j + k] / 255.0;
 						data[3 * w * i + 3 * j + k] *= tmp;
 					}
+
 				}
 				else if (color_choice == 'R') {
 					//sprawdzamy czy piksel w masce ma kolor inny niz (255, 0, 0), jesli tak to wchodzimy do warunku
