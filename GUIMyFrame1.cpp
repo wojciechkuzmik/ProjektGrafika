@@ -121,7 +121,8 @@ void GUIMyFrame1::colorButtonOnButtonClick(wxCommandEvent & event) {
 	wxColourDialog colourDialog(this);
 	if (colourDialog.ShowModal() == wxID_OK)
 		color_choice = colourDialog.GetColourData().GetColour();
-	set_mask(); 
+	if(img_cpy.IsOk())
+		set_mask(); 
 
 }
 
