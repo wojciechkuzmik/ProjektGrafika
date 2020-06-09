@@ -11,14 +11,14 @@ GUIMyFrame1::GUIMyFrame1(wxWindow* parent)
 }
 
 void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
-//wczytuje do zmiennej "bitmap_image" bitmape i zmienia j¹ na typ wxImage - zmienna img_org, tworzy kopiê w img_cpy
+//wczytuje do zmiennej "bitmap_image" bitmape i zmienia jÅ¡ na typ wxImage - zmienna img_org, tworzy kopiÄ™ w img_cpy
 {
 	wxFileDialog WxOpenFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("Base image file (*.bmp)|*.bmp"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (WxOpenFileDialog.ShowModal() == wxID_OK)
 	{
 		if (!bitmap_image.LoadFile((const_cast<char*>((const char*)WxOpenFileDialog.GetPath().mb_str())), wxBITMAP_TYPE_ANY))
 		{
-			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ obrazka"));
+			wxMessageBox(_("Nie uda\u0142o si\u0119 zaÅ‚adowaÄ‡ obrazka"));
 		}
 	}
 	if (bitmap_image.IsOk()) {
@@ -29,18 +29,18 @@ void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
 }
 
 void GUIMyFrame1::load_maskOnButtonClick(wxCommandEvent& event)
-//wczytuje do zmiennej bitmap_mask bitmape i zmienia j¹ na typ wxImage - zmienna img_mask
+//wczytuje do zmiennej bitmap_mask bitmape i zmienia jÅ¡ na typ wxImage - zmienna img_mask
 {
 	wxFileDialog WxOpenFileDialog(this, wxT("Choose a file"), wxT(""), wxT(""), wxT("Mask file (*.bmp)|*.bmp"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 	if (WxOpenFileDialog.ShowModal() == wxID_OK)
 	{
 		if (!bitmap_mask.LoadFile((const_cast<char*>((const char*)WxOpenFileDialog.GetPath().mb_str())), wxBITMAP_TYPE_ANY))
 		{
-			wxMessageBox(_("Nie uda\u0142o si\u0119 za³adowaæ maski"));
+			wxMessageBox(_("Nie uda\u0142o si\u0119 zaÅ‚adowaÄ‡ maski"));
 		}
 	}
 	if (!img_org.IsOk()) {
-		wxMessageBox(_("Proszê wczytaæ obraz przed wczytaniem maski"));
+		wxMessageBox(_("ProszÄ™ wczytaÄ‡ obraz przed wczytaniem maski"));
 		return;
 	}
 	if (bitmap_mask.IsOk()) {
@@ -59,7 +59,7 @@ void GUIMyFrame1::save_imageOnButtonClick(wxCommandEvent& event)
 		{
 			if (!save.SaveFile((const_cast<char*>((const char*)WxSaveFileDialog.GetPath().mb_str())), wxBITMAP_TYPE_BMP))
 			{
-				wxLogError(_("Nie uda\u0142o si\u0119 zapisaæ obrazka"));
+				wxLogError(_("Nie uda\u0142o si\u0119 zapisaÄ‡ obrazka"));
 			}
 		}
 	}
@@ -99,9 +99,6 @@ void GUIMyFrame1::set_mask()
 	unsigned char *data = img_cpy.GetData();
 	unsigned char *mask_data = img_mask.GetData();
 	
-	//pewnie optymalizacja by byla lepsza gdyby te warunki wyciagnac przed petle i zrobic kilka petli
-	//ale kto by sie tym przejmowal
-
 	if (mask_choice == 0) {
 		//zamiana kolorow
 		for (int i = 0; i < h; i++) {
@@ -254,7 +251,7 @@ void GUIMyFrame1::set_mask()
 }
 
 void GUIMyFrame1::Repaint()
-//rysuje img_cpy - tam powinnien sie znajdowac obrazek oryginalny lub juz z na³o¿on¹ mask¹
+//rysuje img_cpy - tam powinnien sie znajdowac obrazek oryginalny lub juz z naÅ‚oÅ¼onÅ¡ maskÅ¡
 {	
 	wxBitmap bitmap(img_cpy);
 	wxClientDC dc(m_panel1);
