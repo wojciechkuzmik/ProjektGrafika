@@ -24,9 +24,17 @@ void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
 			wxMessageBox(_("Nie uda\u0142o si\u0119 za\u0142adować obrazka"));
 		}
 	}
+	//resize okna programu
 	if (bitmap_image.IsOk()) {
 		img_org = bitmap_image.ConvertToImage();
 		img_cpy = img_org.Copy();
+		if(img_cpy.GetSize().GetX() > this->GetSize().GetX() - 205)
+			this->SetSize(wxSize(img_cpy.GetSize().GetX() + 205, this->GetSize().GetY()));
+		if(img_cpy.GetSize().GetY() > this->GetSize().GetY())
+			if(img_cpy.GetSize().GetY() > 600)
+				this->SetSize(wxSize(this->GetSize().GetX(), img_cpy.GetSize().GetY()));
+			else
+				this->SetSize(wxSize(this->GetSize().GetX(), 600));
 		Repaint();
 	}
 }
