@@ -131,7 +131,9 @@ void GUIMyFrame1::set_mask()
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			if (all_colors) {
+				//wybrana opcja wszystkich kolorow
 				if (mask_choice == 1) {
+					//sumowanie kolorow
 					for (int k = 0; k < 3; k++) {
 						if (data[3 * w * i + 3 * j + k] + mask_data[3 * w * i + 3 * j + k] > 255)
 							data[3 * w * i + 3 * j + k] = 255;
@@ -139,6 +141,7 @@ void GUIMyFrame1::set_mask()
 					}
 				}
 				else if (mask_choice == 2) {
+					//mnozenie kolorow
 					for (int k = 0; k < 3; k++) {
 						float tmp = mask_data[3 * w * i + 3 * j + k] / 255.0;
 						data[3 * w * i + 3 * j + k] *= tmp;
