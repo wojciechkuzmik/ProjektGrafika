@@ -10,6 +10,7 @@ GUIMyFrame1::GUIMyFrame1(wxWindow* parent)
 	color_choice = wxColour(255, 0, 0);
 	all_colors = false;
 	mask_choice = 0;
+	color_button->Enable(false);
 }
 
 void GUIMyFrame1::load_imageOnButtonClick(wxCommandEvent& event)
@@ -83,33 +84,34 @@ void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
 	if (color_options->GetSelection() == 0) {
 		color_choice = wxColour(255, 0, 0);
 		all_colors = false;
+		color_button->Enable(false);
 	}
 	else if (color_options->GetSelection() == 1) {
 		color_choice = wxColour(0, 255, 0);
 		all_colors = false;
+		color_button->Enable(false);
 	}
 	else if (color_options->GetSelection() == 2) {
 		color_choice = wxColour(0, 0, 255);
 		all_colors = false;
+		color_button->Enable(false);
 	}
-	else if (color_options->GetSelection() == 3)
+	else if (color_options->GetSelection() == 3) {
 		all_colors = true;
+		color_button->Enable(false);
+	}
 	else
-		all_colors = false;
+		color_button->Enable(true);
 	if (img_cpy.IsOk())
 		set_mask();
 }
 
 
 void GUIMyFrame1::colorButtonOnButtonClick(wxCommandEvent & event) {
-	if (color_options->GetSelection() == 4){
-			wxColourDialog colourDialog(this);
-		if (colourDialog.ShowModal() == wxID_OK)
-			color_choice = colourDialog.GetColourData().GetColour();
-		set_mask(); 
-	}
-	else
-		wxMessageBox(_("Zaznacz opcje Inny"));
+	wxColourDialog colourDialog(this);
+	if (colourDialog.ShowModal() == wxID_OK)
+		color_choice = colourDialog.GetColourData().GetColour();
+	set_mask(); 
 }
 
 void GUIMyFrame1::set_mask() 
