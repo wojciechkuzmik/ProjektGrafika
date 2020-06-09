@@ -38,10 +38,11 @@ class MyFrame1 : public wxFrame
 		wxButton* load_image;
 		wxButton* load_mask;
 		wxButton* save_image;
+		wxButton* color_button;
 		wxStaticLine* m_staticline1;
 		wxRadioBox* mask_options;
-		wxStaticLine* m_staticline2;
 		wxRadioBox* color_options;
+		wxStaticLine* m_staticline2;
 		wxPanel* m_panel1;
 
 		// Virtual event handlers, overide them in your derived class
@@ -49,7 +50,8 @@ class MyFrame1 : public wxFrame
 		virtual void load_maskOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void save_imageOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void mask_optionsOnRadioBox( wxCommandEvent& event ) { event.Skip(); }
-		virtual void color_optionsOnRadioBox( wxCommandEvent& event ) { event.Skip(); }
+		virtual void color_optionsOnRadioBox(wxCommandEvent& event) { event.Skip(); }
+		virtual void colorButtonOnButtonClick(wxCommandEvent& event) { event.Skip(); }
 
 
 	public:

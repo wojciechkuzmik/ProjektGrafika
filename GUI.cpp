@@ -40,11 +40,15 @@ MyFrame1::MyFrame1(wxWindow* parent, wxWindowID id, const wxString& title, const
 	m_staticline2 = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 	bSizer2->Add(m_staticline2, 0, wxEXPAND | wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-	wxString color_optionsChoices[] = { wxT("Czerwony"), wxT("Zielony"), wxT("Niebieski"), wxT("Wszystkie") };
+	wxString color_optionsChoices[] = { wxT("Czerwony"), wxT("Zielony"), wxT("Niebieski"), wxT("Wszystkie"), wxT("Inny") };
 	int color_optionsNChoices = sizeof(color_optionsChoices) / sizeof(wxString);
 	color_options = new wxRadioBox(this, wxID_ANY, wxT("Kolor przezroczysyty"), wxDefaultPosition, wxDefaultSize, color_optionsNChoices, color_optionsChoices, 1, wxRA_SPECIFY_COLS);
 	color_options->SetSelection(0);
 	bSizer2->Add(color_options, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
+	
+	
+	color_button = new wxButton(this, wxID_ANY, wxT("Wybierz kolor"), wxDefaultPosition, wxDefaultSize, 0);
+	bSizer2->Add(color_button, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
 
 	bSizer1->Add(bSizer2, 0, wxEXPAND, 5);
@@ -72,6 +76,7 @@ MyFrame1::MyFrame1(wxWindow* parent, wxWindowID id, const wxString& title, const
 	save_image->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::save_imageOnButtonClick), NULL, this);
 	mask_options->Connect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(MyFrame1::mask_optionsOnRadioBox), NULL, this);
 	color_options->Connect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(MyFrame1::color_optionsOnRadioBox), NULL, this);
+	color_button->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::colorButtonOnButtonClick), NULL, this);
 
 }
 
@@ -82,6 +87,6 @@ MyFrame1::~MyFrame1()
 	load_mask->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::load_maskOnButtonClick), NULL, this);
 	save_image->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::save_imageOnButtonClick), NULL, this);
 	mask_options->Disconnect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(MyFrame1::mask_optionsOnRadioBox), NULL, this);
-	color_options->Disconnect(wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler(MyFrame1::color_optionsOnRadioBox), NULL, this);
-
+	color_options->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::colorButtonOnButtonClick), NULL, this);
+	color_button->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::colorButtonOnButtonClick), NULL, this);
 }
