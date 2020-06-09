@@ -100,8 +100,10 @@ void GUIMyFrame1::color_optionsOnRadioBox(wxCommandEvent& event)
 		all_colors = true;
 		color_button->Enable(false);
 	}
-	else
+	else {
+		all_colors = false;
 		color_button->Enable(true);
+	}
 	if (img_cpy.IsOk())
 		set_mask();
 }
